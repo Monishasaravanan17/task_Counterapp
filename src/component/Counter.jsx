@@ -3,6 +3,7 @@ import { DragDropContext, Droppable,Draggable} from "react-beautiful-dnd";
 // import Drag from "./Drag";
 import Counterone from "./Counterone";
 import "./Counter.css" ;
+import { FaShoppingCart } from "react-icons/fa";
 import { BsTrashFill } from "react-icons/bs";
 export default function Counter() {
  const initialvalue = 0 ;
@@ -30,6 +31,10 @@ export default function Counter() {
   const handleDelete = () => {
     setListitems(listitems.splice(1));
   };
+  const resetall = () =>{
+    setListitems(listitems.splice());
+  };
+  console.log(resetall,"resetall")
   const handleDragEnd = (e) => {
     console.log(!e.destination)
     if (!e.destination) return;
@@ -58,7 +63,7 @@ dispatch("reset")
       <div>
         <table>
           <thead>
-            <h2>counter</h2>
+            <h2 style={{backgroundColor:"skyblue",borderRadius:"10px",height:"30px",width:"150px", aligntext:"center",alignContent:"center"}}>Counter App</h2>
           </thead>
           <Droppable droppableId="tbody">
             {(provided) => (
@@ -67,11 +72,12 @@ dispatch("reset")
                 {...provided.droppableProps}
                 {...provided.dragHandleProps}
               >
-                <tr>
-                  <h2 style={{backgroundColor:"skyblue",borderRadius:"10px", height:"30px",width:"50px", aligntext:"center",alignContent:"center"}}>{State}</h2> 
-                  <h2>item </h2>
-                  <button style={{backgroundColor:"palegreen",borderRadius:"10px",height:"30px",width:"100px", aligntext:"center",alignContent:"center"}} onClick={reset}>Reset</button>
-                  <button  style={{backgroundColor:"palegreen",borderRadius:"10px",height:"30px",width:"100px", aligntext:"center",alignContent:"center"}}>Reset all</button>
+                <tr style={{display:"flex", justifyContent: "space-between", position:"left",alignItems: "center", alignContent: "center",paddingLeft:"10px" }}>
+                <FaShoppingCart />
+                  <th><h2 style={{backgroundColor:"palegreen",borderRadius:"10px", height:"30px",width:"50px", aligntext:"center",alignContent:"center"}}>{State}</h2> </th>
+                  <th><h4 style={{backgroundColor:"palegreen",borderRadius:"10px",height:"30px",width:"80px", aligntext:"center",alignContent:"center"}}>item </h4></th>
+                  <th><button style={{backgroundColor:"palegreen",borderRadius:"10px",height:"30px",width:"100px", aligntext:"center",alignContent:"center"}} onClick={reset}>Reset</button></th>
+                  <th><button  style={{backgroundColor:"palegreen",borderRadius:"10px",height:"30px",width:"100px", aligntext:"center",alignContent:"center"}} onClick={resetall}>Reset all</button></th>
                 </tr>
                 <ul>
                   {listitems.map((item, index) => (
