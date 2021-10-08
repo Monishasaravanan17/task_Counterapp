@@ -4,7 +4,7 @@ function App(){
   return (
     <div>
       <Counter/>
-      <Count/>
+      {/* <Count/> */}
     </div>
   )
 };
