@@ -1,80 +1,97 @@
-import React, { useState, useReducer } from "react";
+import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import Counterone from "./Counterone";
-import "./Counter.css";
-import { FaShoppingCart } from "react-icons/fa";
+// import Counterone from "./Counterone";
+import { ImCart } from "react-icons/im";
 import { BsTrashFill } from "react-icons/bs";
+import { GrAdd } from "react-icons/gr";
+import { FaMinus } from "react-icons/fa";
+import { BiReset } from "react-icons/bi";
+import { GrPowerReset } from "react-icons/gr";
+
 export default function Counter() {
-  const initialState = 0;
-  const reducer = (State, action) => {
-    console.log("state", State);
-
-    switch (action) {
-      case "item":
-        return State + 1;
-      case " reset":
-        return initialState;
-    }
-  };
-
   const [listitems, setListitems] = useState([]);
   const [count, setCount] = useState(0);
   const [Counts, SetCount] = useState(0);
-  const [State, dispatch] = useReducer(reducer, initialState);
+  // const [CountItems, setCountitems] = useState(0);
+  const [removedCounterIdx, setRemovedCounterIdx] = useState([]);
+
+  const handleDragEnd = (results) => {
+    let templistitems = [...listitems];
+    let [selectedRow] = templistitems.splice(results.source.index, 1);
+    templistitems.splice(results.destination.index, 0, selectedRow);
+    setListitems(templistitems);
+  };
+
+  const increment = (id) => {
+    setListitems(
+      [...listitems].map((object) => {
+        if (object.id === id) {
+          return {
+            ...object,
+            count: object.count + 1,
+          };
+        } else return object;
+      })
+    );
+    if (listitems[id].count === 0) {
+      SetCount(Counts + 1);
+    }
+  };
+
+  const decrement = (id) => {
+    setListitems(
+      [...listitems].map((object) => {
+        if (object.id === id && object.count > 0) {
+          return {
+            ...object,
+            count: object.count - 1,
+          };
+        } else return object;
+      })
+    );
+  };
+  const handleDelete = (id) => {
+    let tempArray = [...removedCounterIdx];
+    tempArray.push(id);
+    setRemovedCounterIdx(tempArray);
+    if(Counts > 0){
+      SetCount(Counts - 1);
+    }
+   
+  };
+  const reset = (id) => {
+    setListitems(
+      [...listitems].map((object) => {
+        if (object.count > 0)  {
+          console.log(object.count);
+          return {
+            count: 0
+          };
+        } 
+      })
+    );
+  };
 
   const handleAdd = () => {
     console.log("funtion called");
     setCount(count + 1);
-    setListitems((temp) => [...temp, { id: `${count}` }]);
+    setListitems((temp) => [...temp, { id: `${count}`, count: 0, cart: 0 }]);
+    console.log(listitems, "listitems");
   };
   console.log("listitmes", listitems);
-  const handleDelete = () => {
-    setListitems(listitems.splice(1));
-  };
+
   const resetall = () => {
     setListitems(listitems.splice());
     SetCount(0);
+    setCount(0);
   };
   console.log(resetall, "resetall");
-  const handleDragEnd = (e) => {
-    console.log(!e.destination);
-    if (!e.destination) return;
 
-    let tempData = Array.from(listitems);
-    console.log(tempData);
-    console.log("items");
-    let [Source_data] = tempData.splice(e.source.index, 1);
-    console.log(Source_data);
-    console.log("source");
-    tempData.splice(e.destination.index, 0, Source_data);
-    console.log(tempData.splice(e.destination.index, 0, Source_data));
-    console.log(e);
-  };
-  const Cartitem = () => {
-    SetCount(Counts + 1);
-  };
-  const reset = () => {
-    SetCount(0);
-  };
-
+ 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div>
         <table>
-          <thead>
-            <h2
-              style={{
-                backgroundColor: "skyblue",
-                borderRadius: "10px",
-                height: "35px",
-                width: "150px",
-                aligntext: "center",
-                alignContent: "center",
-              }}
-            >
-              Counter App
-            </h2>
-          </thead>
           <Droppable droppableId="tbody">
             {(provided) => (
               <tbody
@@ -83,114 +100,125 @@ export default function Counter() {
                 {...provided.dragHandleProps}
               >
                 <tr
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    position: "left",
-                    alignItems: "center",
-                    alignContent: "center",
-                    paddingLeft: "10px",
-                  }}
+                  className="navbar navbar-light bg-light"
                 >
-                  <FaShoppingCart />
+                  <ImCart />
                   <th>
-                    <h2
-                      style={{
-                        backgroundColor: "palegreen",
-                        borderRadius: "10px",
-                        height: "30px",
-                        width: "50px",
-                        aligntext: "center",
-                        alignContent: "center",
-                      }}
-                    >
-                      {Counts}
-                    </h2>
+                    <span className="badge rounded-pill bg-secondary" style={{ width: 50 }}>{Counts} </span>
+                      
                   </th>
                   <th>
-                    <h4
-                      style={{
-                        backgroundColor: "palegreen",
-                        borderRadius: "10px",
-                        height: "30px",
-                        width: "80px",
-                        aligntext: "center",
-                        alignContent: "center",
-                      }}
-                    >
-                      item
-                    </h4>
+                    <h4>item</h4>
                   </th>
                   <th>
                     <button
-                      style={{
-                        backgroundColor: "palegreen",
-                        borderRadius: "10px",
-                        height: "30px",
-                        width: "100px",
-                        aligntext: "center",
-                        alignContent: "center",
-                      }}
+                     
+                      className="btn btn-success m-2"
                       onClick={reset}
+                    
+                     
                     >
-                      Reset
+                      <BiReset />
                     </button>
                   </th>
                   <th>
                     <button
-                      style={{
-                        backgroundColor: "palegreen",
-                        borderRadius: "10px",
-                        height: "30px",
-                        width: "100px",
-                        aligntext: "center",
-                        alignContent: "center",
-                      }}
+                       className="btn btn-primary m-2"
                       onClick={resetall}
                     >
-                      Reset all
+                      <GrPowerReset />
                     </button>
                   </th>
                 </tr>
                 <ul>
                   {listitems.map((item, index) => (
-                    <Draggable
-                      key={item.id}
-                      draggableId={item.id}
-                      index={index}
+                    <div
+                      style={{
+                        display: removedCounterIdx?.includes(item.id)
+                          ? "none"
+                          : "block",
+                      }}
                     >
-                      {(provided) => (
-                        <ul
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <th
-                            style={{
-                              backgroundColor: "aqua",
-                              display: "inline-flex",
-                              alignItems: "center",
-                              alignContent: "center",
-                              width: "300px",
-                            }}
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <ul
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
                           >
-                            <td
-                              style={{
-                                backgroundColor: "hotpink",
-                                borderRadius: "10px",
-                                height: "30px",
-                                width: "30px",
-                                aligntext: "center",
-                                alignContent: "center",
-                              }}
-                            >
-                              {index + 1}
-                            </td>
-                            <Counterone Cartitem={Cartitem} />
-                          </th>
-                        </ul>
-                      )}
-                    </Draggable>
+                            <th>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  alignContent: "center",
+                                }}
+                              >
+                                <ul className="nav-item">
+                                  <tr>
+                                    <td>
+                                      <td>
+                                        <div>
+                                          {item.count === 0 ? (
+                                            <h3
+                                            style={{ marginBottom:"3px",justifyContent:"space-around" }}
+                                              className="btn btn-warning"
+                                            >
+                                              Zero
+                                            </h3>
+                                          ) : (
+                                            <h3
+                                            style={{ marginBottom:"3px",justifyContent:"space-around",height:"30px",width:"30px" }}
+                                              className="btn btn-primary"
+                                            >
+                                              {item.count}
+                                            </h3>
+                                          )}
+                                        </div>
+                                      </td>
+                                      <td>
+                                        <button
+                                          className="btn btn-secondary"
+                                          onClick={() => {
+                                            increment(item.id);
+                                          }}
+                                        >
+                                          <GrAdd />
+                                        </button>
+                                      </td>
+                                      <td>
+                                        <button
+                                          className="btn btn-info m-2"
+                                          onClick={() => {
+                                            decrement(item.id);
+                                          }}
+                                        >
+                                          <FaMinus />
+                                        </button>
+                                      </td>
+                                      <td>
+                                        <button
+                                         className="btn btn-danger"
+                                          onClick={() => {
+                                            handleDelete(item.id);
+                                          }}
+                                        >
+                                          <BsTrashFill />
+                                        </button>
+                                      </td>
+                                    </td>
+                                  </tr>
+                                </ul>
+                              </div>
+                            </th>
+                          </ul>
+                        )}
+                      </Draggable>
+                    </div>
                   ))}
                 </ul>
               </tbody>
@@ -199,30 +227,10 @@ export default function Counter() {
         </table>
 
         <button
-          style={{
-            backgroundColor: "sandybrown",
-            borderRadius: "10px",
-            height: "30px",
-            width: "100px",
-            aligntext: "center",
-            alignContent: "center",
-          }}
+         className="btn btn-success m-2"
           onClick={handleAdd}
         >
           Add
-        </button>
-        <button
-          style={{
-            backgroundColor: "sandybrown",
-            borderRadius: "10px",
-            height: "30px",
-            width: "100px",
-            aligntext: "center",
-            alignContent: "center",
-          }}
-          onClick={handleDelete}
-        >
-          Delete <BsTrashFill />
         </button>
       </div>
     </DragDropContext>
